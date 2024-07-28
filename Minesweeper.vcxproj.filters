@@ -24,6 +24,9 @@
     <ClCompile Include="MainWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Helpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainWindow.h">
@@ -33,6 +36,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Structures.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

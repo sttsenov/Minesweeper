@@ -129,6 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BaseWindow.h" />
+    <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
   </ItemGroup>
@@ -136,6 +137,7 @@
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Structures.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

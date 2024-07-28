@@ -69,8 +69,8 @@ private:
 	// Tracks cells/game buttons that have been clicked
 	std::vector<int>	_expandedCells;
 
-	int			_sectionHeight{ 0 };
-	int			_sectionWidth{ 0 };
+	int					_sectionHeight{ 0 };
+	int					_sectionWidth{ 0 };
 
 	static HBITMAP		_flagBitmap;
 	static HBITMAP		_mineBitmap;

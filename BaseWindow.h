@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 
-#include "Helpers.h"
+#include "Structures.h"
 
 template <class DERIVED_TYPE>
 class BaseWindow
@@ -95,7 +95,7 @@ public:
         PCWSTR lpWindowText,
         Dimensions dimensions   = Dimensions(0, 0, 50, 50),
         // Tracks how close we are to a mine.
-        int8_t numberValue      = 0     // NOTE: -1 means that we are mine
+        int numberValue      = 0     // NOTE: -1 means that we are mine
         ) 
     {
         HWND hPushButton;

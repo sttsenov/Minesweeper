@@ -2,31 +2,29 @@
 
 #include "stdafx.h"
 
-struct Dimensions
-{
-    Dimensions() : x(CW_USEDEFAULT), y(CW_USEDEFAULT), width(CW_USEDEFAULT), height(CW_USEDEFAULT) {}
-    Dimensions(int newX, int newY, int newWidth, int newHeight) : x(newX), y(newY), width(newWidth), height(newHeight) {}
+#include "Structures.h"
 
-    int x;
-    int y;
-    int width;
-    int height;
-};
-
-struct Button
+namespace Helpers
 {
-    Button() : handle(NULL), number(0), hasFlag(false), isRevealed(false) {}
-    Button(HWND nHandle, int8_t nNumber) : handle(nHandle), number(nNumber)
+    void DrawImage(HDC& hDC, RECT& rc, HBITMAP& image);
+
+    void SetNumberText(HDC& hDC, int8_t& number);
+
+    namespace Directions
     {
-        hasFlag = false;
-        isRevealed = false;
+        enum Direction
+        {
+            RIGHT,
+            LEFT,
+            BOTTOM,
+            TOP
+        };
+
+        void GetNeighbours(std::vector<int>& neighbours, int& index, Direction direction);
+
+        void GetNeighboursTop(std::vector<int>& neighbours, int& index);
+        void GetNeighboursBottom(std::vector<int>& neighbours, int& index);
+        void GetNeighboursLeft(std::vector<int>& neighbours, int& index);
+        void GetNeighboursRight(std::vector<int>& neighbours, int& index);
     }
-
-    bool IsMine() { return (number < 0); }
-
-    HWND handle;
-    int8_t number;
-
-    bool hasFlag{ false };
-    bool isRevealed{ false };
-};
+}
