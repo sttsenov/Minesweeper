@@ -6,6 +6,13 @@
 
 namespace Helpers
 {
+    template<typename T>
+    void Shuffle(T& obj)
+    {
+        unsigned seed = (unsigned)std::chrono::system_clock::now().time_since_epoch().count();
+        std::shuffle(std::begin(obj), std::end(obj), std::default_random_engine(seed));
+    }
+
     void DrawImage(HDC& hDC, RECT& rc, HBITMAP& image);
 
     void SetNumberText(HDC& hDC, int8_t& number);

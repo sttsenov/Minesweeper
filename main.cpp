@@ -38,7 +38,6 @@
 	 HWND hResetButton;
 	 if (!mainWindow.CreateButton(L"button", L"Reset", hResetButton, (HMENU)RESET_BUTTON_ID, resetButtonDimensions))
 	 {
-		 DWORD lastError = GetLastError();
 		 return -1;
 	 }
 
@@ -55,7 +54,7 @@
 	 bool blocks[GRID_SIZE] = { 0 };
 	 std::fill_n(blocks, N_MINES, true);
 
-	 mainWindow.Shuffle<bool[GRID_SIZE]>(blocks);
+	 Helpers::Shuffle<bool[GRID_SIZE]>(blocks);
 	 
 	 // ----------------------------------------
 

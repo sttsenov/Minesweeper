@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 #include "MainWindow.h"
-#include "Helpers.h"
 
 using Direction = Helpers::Directions::Direction;
 
@@ -62,7 +61,7 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
 
         HWND hButton = (HWND)lParam;
-        Button* button = FindButton(hButton, _currentButtonIndex);
+        Button* button = FindButton(hButton);
 
         if (button == NULL)
             return TRUE;
@@ -71,8 +70,25 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             _isRunning = true;
 
         ExpandNeighbours(button);
-            
-        InvalidateRect(m_hwnd, NULL, TRUE);
+    }
+    break;
+
+    case WM_LBUTTONDOWN:
+    {
+        int xPos = GET_X_LPARAM(lParam);
+        int yPos = GET_Y_LPARAM(lParam);
+
+        if (yPos < OFFSET_Y)
+        {
+            return FALSE;
+        }
+
+        Button* button = FindButton(xPos, yPos);
+
+        if (button == NULL || !_isRunning)
+            return TRUE;
+
+        ExpandNeighbours(button, _currentButtonIndex, true);
     }
     break;
 
@@ -224,14 +240,45 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     return TRUE;
 }
 
-Button* MainWindow::FindButton(HWND& hButton, int& index /* = _currentButtonIndex */)
+Button* MainWindow::FindButton(HWND& hButton)
 {
     for (int i = 0; i < buttons.size(); ++i)
     {
         if (buttons.at(i).handle == hButton)
         {
-            index = i;
+            _currentButtonIndex = i;
             return &buttons.at(i);
+        }
+    }
+
+    return NULL;
+}
+
+Button* MainWindow::FindButton(int& xPos, int& yPos)
+{
+    long trackerX = 0;
+    long trackerY = _sectionHeight;
+
+    for (int i = 0; i < buttons.size(); ++i)
+    {
+        bool inBoundsX = trackerX <= xPos && xPos <= trackerX + BUTTON_WIDTH;
+        bool inBoundsY = trackerY <= yPos && yPos <= trackerY + BUTTON_HEIGHT;
+
+        // Check if we are in the button
+        if (inBoundsX && inBoundsY)
+        {
+            _currentButtonIndex = i;
+            return &buttons.at(i);
+        }
+
+        // Update X
+        trackerX += BUTTON_WIDTH;
+
+        // Check if we are on a new row
+        if ((i + 1) % N_COLUMNS == 0)
+        {
+            trackerX = 0;
+            trackerY += BUTTON_HEIGHT;
         }
     }
 
@@ -261,7 +308,7 @@ void MainWindow::CalculateDistance()
     }
 }
 
-void MainWindow::ExpandNeighbours(Button* button , int& index /*  = _currentButtonIndex */)
+void MainWindow::ExpandNeighbours(Button* button , int& index /*  = _currentButtonIndex */, bool expandNumbers /* = false */)
 {
     if (button == NULL)
         return;
@@ -290,12 +337,23 @@ void MainWindow::ExpandNeighbours(Button* button , int& index /*  = _currentButt
         
         return;
     }
-    else if (button->number == 0)
+    else if (button->number == 0 || expandNumbers)
     {
         bool isCellExpanded{ false };
-        
         _expandedCells.push_back(index);
+        
         std::vector<int> neighbours = FindGridNeighbours(index);
+        int flaggedNeighbours = GetNeighboursFlags(neighbours);
+
+        // Enough number of flags should be places to double expand, 
+        // exit early if they are not
+        if (expandNumbers && button->number != flaggedNeighbours)
+        {
+            EnableWindow(button->handle, FALSE);
+            InvalidateRect(button->handle, NULL, TRUE);
+
+            return;
+        }
 
         for (int& neighbour : neighbours)
         {
@@ -315,12 +373,19 @@ void MainWindow::ExpandNeighbours(Button* button , int& index /*  = _currentButt
                 continue;
 
             Button& neighbourButton = buttons.at(neighbour);
-            ExpandNeighbours(&neighbourButton, neighbour);
+
+            // Don't expand button that has a flag
+            if (neighbourButton.hasFlag)
+                continue;
+
+            ExpandNeighbours(&neighbourButton, neighbour, false);
         }
     }
 
     _expandedCells.push_back(index);
+
     EnableWindow(button->handle, FALSE);
+    InvalidateRect(button->handle, NULL, TRUE);
 }
 
 std::vector<int> MainWindow::FindGridNeighbours(int& index)
@@ -336,6 +401,21 @@ std::vector<int> MainWindow::FindGridNeighbours(int& index)
     return neighbours;
 }
 
+int MainWindow::GetNeighboursFlags(std::vector<int>& neighbours)
+{
+    int flags{ 0 };
+
+    for (const int& neighbour : neighbours)
+    {
+        if (buttons.at(neighbour).hasFlag)
+        {
+            flags++;
+        }
+    }
+
+    return flags;
+}
+
 void MainWindow::HandleFlag(int& xPos, int& yPos)
 {
     if (!_isRunning)
@@ -344,63 +424,43 @@ void MainWindow::HandleFlag(int& xPos, int& yPos)
         return;
     }
 
-    long trackerX = 0;
-    long trackerY = _sectionHeight;
+    Button* button = FindButton(xPos, yPos);
 
-    for (int i = 0; i < buttons.size(); ++i)
+    if (button == NULL || button->isRevealed)
     {
-        bool inBoundsX = trackerX <= xPos && xPos <= trackerX + BUTTON_WIDTH;
-        bool inBoundsY = trackerY <= yPos && yPos <= trackerY + BUTTON_HEIGHT;
-
-        // Check if we are in the button
-        if (inBoundsX && inBoundsY)
-        {
-            Button& button = buttons.at(i);
-
-            // Remove previously set flag
-            if (button.hasFlag)
-            {
-                button.hasFlag = false;
-
-                if (button.IsMine())
-                {
-                    ++_iMineFlaggedCounter;
-                }
-
-                IncrementCounter();
-
-                EnableWindow(button.handle, TRUE);
-            }
-            // Add a flag
-            else
-            {
-                button.hasFlag = true;
-
-                if (button.IsMine())
-                {
-                    --_iMineFlaggedCounter;
-                }
-
-                DecrementCounter();
-
-                EnableWindow(button.handle, FALSE);
-            }
-
-            InvalidateRect(m_hwnd, NULL, TRUE);
-
-            break;
-        }
-
-        // Update X
-        trackerX += BUTTON_WIDTH;
-
-        // Check if we are on a new row
-        if ((i + 1) % N_COLUMNS == 0)
-        {
-            trackerX = 0;
-            trackerY += BUTTON_HEIGHT;
-        }
+        return;
     }
+
+    // Remove previously set flag
+    if (button->hasFlag)
+    {
+        button->hasFlag = false;
+
+        if (button->IsMine())
+        {
+            ++_iMineFlaggedCounter;
+        }
+
+        IncrementCounter();
+
+        EnableWindow(button->handle, TRUE);
+    }
+    // Add a flag
+    else
+    {
+        button->hasFlag = true;
+
+        if (button->IsMine())
+        {
+            --_iMineFlaggedCounter;
+        }
+
+        DecrementCounter();
+
+        EnableWindow(button->handle, FALSE);
+    }
+
+    InvalidateRect(button->handle, NULL, TRUE);
 }
 
 void MainWindow::ResetGame()
@@ -420,7 +480,7 @@ void MainWindow::ResetGame()
     bool blocks[GRID_SIZE] = { 0 };
     std::fill_n(blocks, N_MINES, true);
 
-    Shuffle<bool[GRID_SIZE]>(blocks);
+    Helpers::Shuffle<bool[GRID_SIZE]>(blocks);
 
     // Reset all buttons |  Clear number values and place bombs
     for (int i = 0; i < buttons.size(); ++i)
@@ -442,6 +502,4 @@ void MainWindow::ResetGame()
         EnableWindow(button.handle, TRUE);
         InvalidateRect(button.handle, NULL, TRUE);
     }
-
-    InvalidateRect(m_hwnd, NULL, TRUE);
 }

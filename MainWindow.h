@@ -1,9 +1,6 @@
 #pragma once
 #include "BaseWindow.h"
-
-#include <chrono>
-#include <random>
-#include <algorithm>
+#include "Helpers.h"
 
 class MainWindow : public BaseWindow<MainWindow>
 {
@@ -15,13 +12,6 @@ public:
 
 	void	SetSectionHeight(int& height) { _sectionHeight = height; }
 	void	SetSectionWidth(int& width) { _sectionWidth = width; }
-
-	template<typename T>
-	void	Shuffle(T& obj)
-	{
-		unsigned seed = (unsigned)std::chrono::system_clock::now().time_since_epoch().count();
-		std::shuffle(std::begin(obj), std::end(obj), std::default_random_engine(seed));
-	}
 
 private:
 	void DecrementCounter()
@@ -43,10 +33,13 @@ private:
 			++_iTimer;
 	}
 	
-	Button* FindButton(HWND& hButton, int& index = _currentButtonIndex);
-	std::vector<int> FindGridNeighbours(int& index);
+	Button* FindButton(HWND& hButton);
+	Button* FindButton(int& xPos, int& yPos);
 
-	void ExpandNeighbours(Button* button, int& index = _currentButtonIndex);
+	std::vector<int> FindGridNeighbours(int& index);
+	int GetNeighboursFlags(std::vector<int>& neighbours);
+
+	void ExpandNeighbours(Button* button, int& index = _currentButtonIndex, bool expandNumbers = false);
 
 	void HandleFlag(int& xPos, int& yPos);
 	void ResetGame();
