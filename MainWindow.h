@@ -5,6 +5,8 @@
 class MainWindow : public BaseWindow<MainWindow>
 {
 public:
+	MainWindow() { std::fill_n(mineBlocks, N_MINES, true); }
+
 	PCWSTR	ClassName() const { return L"Main Window!"; };
 	LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -12,6 +14,8 @@ public:
 
 	void	SetSectionHeight(int& height) { _sectionHeight = height; }
 	void	SetSectionWidth(int& width) { _sectionWidth = width; }
+
+	bool mineBlocks[GRID_SIZE] = { 0 };
 
 private:
 	void DecrementCounter()

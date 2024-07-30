@@ -51,10 +51,7 @@
 	 int8_t plantMine{ 0 };
 	 int counter{ 0 };
 
-	 bool blocks[GRID_SIZE] = { 0 };
-	 std::fill_n(blocks, N_MINES, true);
-
-	 Helpers::Shuffle<bool[GRID_SIZE]>(blocks);
+	 Helpers::Shuffle<bool[GRID_SIZE]>(mainWindow.mineBlocks);
 	 
 	 // ----------------------------------------
 
@@ -68,7 +65,7 @@
 			 dimensions.x = columns * dimensions.width;
 
 			 // Check if we expect block to be a mine
-			 plantMine = blocks[counter] ? -1 : 0;
+			 plantMine = mainWindow.mineBlocks[counter] ? -1 : 0;
 
 			 // Populate the bombs first
 			 if (!mainWindow.CreateGameButton(L"button", L"", dimensions, plantMine))

@@ -477,10 +477,7 @@ void MainWindow::ResetGame()
     _expandedCells.clear();
 
     int counter{ 0 };
-    bool blocks[GRID_SIZE] = { 0 };
-    std::fill_n(blocks, N_MINES, true);
-
-    Helpers::Shuffle<bool[GRID_SIZE]>(blocks);
+    Helpers::Shuffle<bool[GRID_SIZE]>(mineBlocks);
 
     // Reset all buttons |  Clear number values and place bombs
     for (int i = 0; i < buttons.size(); ++i)
@@ -490,7 +487,7 @@ void MainWindow::ResetGame()
         button.hasFlag = false;
         button.isRevealed = false;
 
-        button.number = blocks[counter] ? -1 : 0;
+        button.number = mineBlocks[counter] ? -1 : 0;
         counter++;
     }
 
