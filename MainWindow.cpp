@@ -51,6 +51,25 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
     break;
 
+    case WM_KEYDOWN:
+    {
+         if (wParam == VK_SPACE)
+        {
+            POINT pt;
+
+            GetCursorPos(&pt);
+            ScreenToClient(m_hwnd, &pt);
+
+            if (pt.y < OFFSET_Y)
+            {
+                return FALSE;
+            }
+
+            HandleFlag(pt.x, pt.y);
+        }
+    }
+    break;
+
     case WM_COMMAND:
     {
         if (LOWORD(wParam) == RESET_BUTTON_ID)
@@ -63,20 +82,22 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         HWND hButton = (HWND)lParam;
         Button* button = FindButton(hButton);
 
-        if (button == NULL)
+        if (button == NULL || button->hasFlag)
             return TRUE;
         
         if (!_isRunning)
             _isRunning = true;
 
         ExpandNeighbours(button);
+
+        SetFocus(m_hwnd);
     }
     break;
 
     case WM_LBUTTONDOWN:
     {
-        int xPos = GET_X_LPARAM(lParam);
-        int yPos = GET_Y_LPARAM(lParam);
+        LONG xPos = GET_X_LPARAM(lParam);
+        LONG yPos = GET_Y_LPARAM(lParam);
 
         if (yPos < OFFSET_Y)
         {
@@ -85,7 +106,7 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
         Button* button = FindButton(xPos, yPos);
 
-        if (button == NULL || !_isRunning)
+        if (button == NULL || !_isRunning || button->hasFlag)
             return TRUE;
 
         ExpandNeighbours(button, _currentButtonIndex, true);
@@ -94,8 +115,8 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_RBUTTONDOWN:
     {
-        int xPos = GET_X_LPARAM(lParam);
-        int yPos = GET_Y_LPARAM(lParam);
+        LONG xPos = GET_X_LPARAM(lParam);
+        LONG yPos = GET_Y_LPARAM(lParam);
 
         if (yPos < OFFSET_Y)
         {
@@ -114,8 +135,8 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             // to check if we are in the grid, since this only gets called
             // by children.
             // NOTE: If children of other types are added. This will probably break :D 
-            int xPos = GET_X_LPARAM(lParam);
-            int yPos = GET_Y_LPARAM(lParam);
+            LONG xPos = GET_X_LPARAM(lParam);
+            LONG yPos = GET_Y_LPARAM(lParam);
 
             HandleFlag(xPos, yPos);
         }
@@ -254,7 +275,7 @@ Button* MainWindow::FindButton(HWND& hButton)
     return NULL;
 }
 
-Button* MainWindow::FindButton(int& xPos, int& yPos)
+Button* MainWindow::FindButton(LONG& xPos, LONG& yPos)
 {
     long trackerX = 0;
     long trackerY = _sectionHeight;
@@ -416,7 +437,7 @@ int MainWindow::GetNeighboursFlags(std::vector<int>& neighbours)
     return flags;
 }
 
-void MainWindow::HandleFlag(int& xPos, int& yPos)
+void MainWindow::HandleFlag(LONG& xPos, LONG& yPos)
 {
     if (!_isRunning)
     {

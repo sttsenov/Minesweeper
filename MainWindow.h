@@ -38,14 +38,14 @@ private:
 	}
 	
 	Button* FindButton(HWND& hButton);
-	Button* FindButton(int& xPos, int& yPos);
+	Button* FindButton(LONG& xPos, LONG& yPos);
 
 	std::vector<int> FindGridNeighbours(int& index);
 	int GetNeighboursFlags(std::vector<int>& neighbours);
 
 	void ExpandNeighbours(Button* button, int& index = _currentButtonIndex, bool expandNumbers = false);
 
-	void HandleFlag(int& xPos, int& yPos);
+	void HandleFlag(LONG& xPos, LONG& yPos);
 	void ResetGame();
 
 	// Keeps some state information
