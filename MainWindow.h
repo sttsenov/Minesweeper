@@ -43,7 +43,7 @@ private:
 	std::vector<int> FindGridNeighbours(int& index);
 	int GetNeighboursFlags(std::vector<int>& neighbours);
 
-	void ExpandNeighbours(Button* button, int& index = _currentButtonIndex, bool expandNumbers = false);
+	void ExpandNeighbours(Button* button, int& index = _currentButtonIndex, bool expandNumbers = true);
 
 	void HandleFlag(LONG& xPos, LONG& yPos);
 	void ResetGame();

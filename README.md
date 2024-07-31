@@ -5,7 +5,7 @@ This project aims to create a Minesweeper clone using the native Win32 GUI funct
 
 The feature I am talking about is the use of the keyboard. I believe that a page can be taken from the book of Vim and similar editors that mainly rely on keyboard shortcuts as opposed to mouse events. 
 
-Currently, this project does **NOT** support keyboard shortcuts, except for the "space" key that can be used to place flags once the game is started. The code as it is now is solely responsible for creating a clone of the game with little to no novelty. That being said, one day when I decide to return to this project (fingers crossed), the goal will be to implement the aforementioned feature.
+Currently, this project supports a small amount of keyboard shortcuts all of which work with the position of the mouse cursor. The "Space" key can be used to expand a cell, while the "F" key can be used to place/remove a flag. The code as it is now is solely responsible for creating a clone of the game with little to no novelty. That being said, one day when I decide to return to this project (fingers crossed), the goal will be to implement the aforementioned feature.
 
 ## Notes
 

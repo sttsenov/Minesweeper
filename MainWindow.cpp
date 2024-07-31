@@ -53,19 +53,34 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     case WM_KEYDOWN:
     {
-         if (wParam == VK_SPACE)
+        POINT pt;
+
+        GetCursorPos(&pt);
+        ScreenToClient(m_hwnd, &pt);
+
+        // Not a game button, exit early
+        if (pt.y < OFFSET_Y)
         {
-            POINT pt;
-
-            GetCursorPos(&pt);
-            ScreenToClient(m_hwnd, &pt);
-
-            if (pt.y < OFFSET_Y)
-            {
-                return FALSE;
-            }
-
+            return FALSE;
+        }
+        
+        if (wParam == F_KEY)
+        {
             HandleFlag(pt.x, pt.y);
+        }
+        else if (wParam == VK_SPACE)
+        {
+            Button* button = FindButton(pt.x, pt.y);
+
+            if (button == NULL || button->hasFlag)
+                return FALSE;
+
+            if (!_isRunning)
+                _isRunning = true;
+
+            ExpandNeighbours(button);
+
+            SetFocus(m_hwnd);
         }
     }
     break;
@@ -89,8 +104,6 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             _isRunning = true;
 
         ExpandNeighbours(button);
-
-        SetFocus(m_hwnd);
     }
     break;
 
@@ -109,7 +122,7 @@ LRESULT MainWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         if (button == NULL || !_isRunning || button->hasFlag)
             return TRUE;
 
-        ExpandNeighbours(button, _currentButtonIndex, true);
+        ExpandNeighbours(button);
     }
     break;
 
@@ -520,4 +533,6 @@ void MainWindow::ResetGame()
         EnableWindow(button.handle, TRUE);
         InvalidateRect(button.handle, NULL, TRUE);
     }
+
+    SetFocus(m_hwnd);
 }

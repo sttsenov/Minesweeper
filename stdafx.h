@@ -41,7 +41,12 @@
 #define TEXT_CYAN(hDC)			SetTextColor(hDC, RGB(0, 48, 48));
 
 // ---------------------------------------
-// Constants Macros
+// Key bindings
+// ---------------------------------------
+#define F_KEY		0x46
+
+// ---------------------------------------
+// Constants
 // ---------------------------------------
 int constexpr N_ROWS = 16;
 int constexpr N_COLUMNS = 30;
