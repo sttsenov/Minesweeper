@@ -1,11 +1,11 @@
 
 # Minesweeper
 
-This project aims to create a Minesweeper clone using the native Win32 GUI functionality. From extensive playing of the game, I've come to realise that there's a missing feature that, in my opinion, can allow for faster solve time. 
+This project aims to create a Minesweeper clone using the native Win32 GUI functionality. From the extensive playing of the game, I've realised that there's a missing feature that, in my opinion, can allow for faster solve time. 
 
 The feature I am talking about is the use of the keyboard. I believe that a page can be taken from the book of Vim and similar editors that mainly rely on keyboard shortcuts as opposed to mouse events. 
 
-Currently, this project does **NOT** support keyboard shortcuts. The code as it is now is solely responsible for creating a clone of the game with little to no novelty. That being said, one day when I decide to return to this project (fingers crossed), the goal will be to implement the aforementioned feature.
+Currently, this project does **NOT** support keyboard shortcuts, except for the "space" key that can be used to place flags once the game is started. The code as it is now is solely responsible for creating a clone of the game with little to no novelty. That being said, one day when I decide to return to this project (fingers crossed), the goal will be to implement the aforementioned feature.
 
 ## Notes
 
